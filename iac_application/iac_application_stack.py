@@ -1,9 +1,14 @@
 from aws_cdk import (
     # Duration,
     Stack,
-    # aws_sqs as sqs,
+    aws_ec2 as ec2,
+    aws_ssm as ssm
 )
 from constructs import Construct
+
+from module_vpc import config
+from module_vpc.module_vpc import ModuleVpc
+
 
 class IacApplicationStack(Stack):
 
@@ -12,8 +17,7 @@ class IacApplicationStack(Stack):
 
         # The code that defines your stack goes here
 
-        # example resource
-        # queue = sqs.Queue(
-        #     self, "IacApplicationQueue",
-        #     visibility_timeout=Duration.seconds(300),
-        # )
+        self.vpc_module = ModuleVpc(self, config.VPC)
+
+        vpc = self.vpc_module.vpc
+       
