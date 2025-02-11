@@ -1,28 +1,33 @@
-#!/usr/bin/env python3
+import aws_cdk as cdk
 import os
 
-import aws_cdk as cdk
-
+from iac_application.ecs.ecs_stack import EcsStack
 from iac_application.iac_application_stack import IacApplicationStack
+from iac_application.rds.rds_stack import RDSStack
 
+env = cdk.Environment(
+    account=os.getenv('CDK_DEFAULT_ACCOUNT', '767397670732'),
+    region=os.getenv('CDK_DEFAULT_REGION', 'us-east-1')
+)
 
 app = cdk.App()
-IacApplicationStack(app, "IacApplicationStack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
-
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
-
-    #env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
-
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
-
-    env=cdk.Environment(account='767397670732', region='us-east-1'),
-
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
+vpc_stack = IacApplicationStack(
+    app, 
+    "IacApplicationStack",
+    env=env
     )
+
+EcsStack(
+    app, 
+    "EcsStack", 
+    vpc=vpc_stack.vpc,
+    env=env
+)
+
+# RDSStack( app, 
+#     "RDSStack", 
+#     vpc=vpc_stack.vpc,
+#     env=env
+# )
 
 app.synth()
